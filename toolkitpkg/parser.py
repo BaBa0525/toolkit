@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import List
 import csv
 import re
 
@@ -27,7 +28,7 @@ class DetectionResultParser:
         self.dicts = DetectionResultParser.to_dicts(inputFile)
 
     @staticmethod
-    def to_dicts(filename: str) -> list[dict]:
+    def to_dicts(filename: str) -> List[dict]:
         dicts = []
 
         with open(filename, 'r') as file:
