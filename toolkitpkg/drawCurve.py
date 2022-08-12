@@ -3,7 +3,10 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import roc_curve, auc
 from sklearn.metrics import precision_recall_curve
 
-CATEGORY = 'border'
+INDEX = 0
+CATEGORIES = ['border', 'comment', 'external']
+
+CATEGORY = CATEGORIES[INDEX]
 INPUT_FILE = f'./testing-data/{CATEGORY}.csv'
 OUTPUT_ROC = f'./output/{CATEGORY}-roc.png'
 OUTPUT_PR = f'./output/{CATEGORY}-pr.png'
@@ -20,10 +23,8 @@ def drawROC(inputFile: str, outputFile: str):
 
     # Plot ROC curve
     plt.clf()
-    plt.plot(fpr, tpr, label=f'ROC curve (area={roc_auc:0.2f})')
-    plt.plot([0, 1], [0, 1], 'k--')
-    plt.xlim([0.0, 1.0])
-    plt.ylim([0.0, 1.0])
+    plt.plot(fpr, tpr, marker='.', label=f'ROC curve (area={roc_auc:0.2f})')
+    plt.plot([0, 1], [0, 1], linestyle='--', label='No skill')
     plt.xlabel('False Positive Rate')
     plt.ylabel('True Positive Rate')
     plt.title('Receiver operating characteristic')
@@ -39,12 +40,11 @@ def drawPR(inputFile: str, outputFile: str):
     y_test, probas = df['actual'], df['predict']
 
     precision, recall, _ = precision_recall_curve(y_test, probas)
+    no_skill = len(y_test[y_test==1]) / len(y_test)
 
     plt.clf()
-    plt.plot(recall, precision, label='PR curve')
-    plt.plot([0, 1], [0, 1], 'k--')
-    plt.xlim([0.0, 1.0])
-    plt.ylim([0.0, 1.0])
+    plt.plot(recall, precision, marker='.', label='PR curve')
+    plt.plot([0, 1], [no_skill, no_skill], linestyle='--', label='No skill')
     plt.xlabel('Recall')
     plt.ylabel('Precision')
     plt.title('Precision-Recall Curve')
