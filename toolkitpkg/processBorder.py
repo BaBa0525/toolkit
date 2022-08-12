@@ -80,6 +80,7 @@ def main():
         height = int(predictData[image]['height'])
         
         matches = borderMapping(actual, predict, confidence, height)
+        print(f'{matches=}')
         processed += matches
 
 
