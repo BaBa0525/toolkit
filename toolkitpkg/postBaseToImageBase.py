@@ -52,8 +52,8 @@ class ImageBasedRow:
         ]
     
     def bordersInPixel(self, imageHeight: int) -> List[int]:
-        # the reason to put [1:] is to drop the INVISIBLE_PERCENTAGE
-        accumulatedPercentage = list(accumulate(self.percentage, initial=INVISIBLE_PERCENTAGE))[1:]
+        # the reason to put [1:-1] is to drop the INVISIBLE_PERCENTAGE
+        accumulatedPercentage = list(accumulate(self.percentage, initial=INVISIBLE_PERCENTAGE))[1:-1]
 
         def getPixel(percentage: float, imageHeight: int):
             return round(percentage * imageHeight)
