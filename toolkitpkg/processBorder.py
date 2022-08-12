@@ -1,12 +1,10 @@
 import csv
 from functools import partial
-from math import isnan
-from typing import List
-import pandas as pd
 
 from csvOperations import write_csv
 
-ACCEPTABLE_PERCENTAGE = 0.05
+LOG_DETAILS = False
+ACCEPTABLE_PERCENTAGE = 5
 
 def first_true(iterable, default=False, pred=None):
     """Returns the first true value in the iterable.
@@ -21,16 +19,11 @@ def first_true(iterable, default=False, pred=None):
 
 
 def acceptable(actual: int, predict: int, height: int):
-    return abs(actual - predict) < height * ACCEPTABLE_PERCENTAGE
+    return abs(actual - predict) < height * (ACCEPTABLE_PERCENTAGE / 100)
+
 
 
 def borderMapping(actualData, predictData, confidences, height):
-
-    print('=' * 50)
-    print(f'{actualData=}')
-    print(f'{predictData=}')
-    print(f'{confidences=}')
-    print(f'{height=}')
 
     matches = []
 
@@ -80,8 +73,16 @@ def main():
         height = int(predictData[image]['height'])
         
         matches = borderMapping(actual, predict, confidence, height)
-        print(f'{matches=}')
         processed += matches
+
+        if LOG_DETAILS:
+            print(f'{image=}')
+            print(f'{actual=}')
+            print(f'{predict=}')
+            print(f'{confidence=}')
+            print(f'{height=}px')
+            print(f'{matches=}')
+            print('=' * 50)
 
 
     write_csv(
