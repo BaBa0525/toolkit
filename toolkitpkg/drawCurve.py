@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.metrics import roc_curve, auc
 
-CATEGORY = 'comment'
+CATEGORY = 'border'
 INPUT_FILE = f'./testing-data/{CATEGORY}.csv'
 OUTPUT_FILE = f'./output/{CATEGORY}.png'
 

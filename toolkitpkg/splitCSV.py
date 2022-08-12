@@ -15,7 +15,6 @@ def extract_field(corrected: List[Dict[str, str]], inference: List[Dict[str, str
 
     for data in corrected:
         imageToFields[data['image']] = {
-            'image': data['image'],
             'actual': data[truthField]
         }
  
