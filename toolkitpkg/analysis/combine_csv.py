@@ -1,6 +1,6 @@
 from typing import Dict, List
 
-from .csvOperations import read_csv, write_csv
+from ..csvops import read_csv, write_csv
 
 idStringToNewNumber = {}
 

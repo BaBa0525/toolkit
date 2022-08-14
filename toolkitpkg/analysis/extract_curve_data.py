@@ -1,10 +1,23 @@
-import csv
+from typing import Dict, List
 from functools import partial
+from . import ACCEPTABLE_PERCENTAGE, MAXIMUM_HEIGHT, MINIMUM_HEIGHT
 
-from csvOperations import write_csv
 
-LOG_DETAILS = False
-ACCEPTABLE_PERCENTAGE = 5
+def extract_field(corrected: List[Dict[str, str]], inference: List[Dict[str, str]], truthField: str, predictField: str) -> List[dict]:
+    imageToFields = {}
+
+    for data in corrected:
+        imageToFields[data['image']] = {
+            'actual': data[truthField]
+        }
+ 
+    for data in inference:
+        imageToFields[data['img']].update({
+            'predict': data[predictField]
+        })
+
+    return list(imageToFields.values())
+
 
 def first_true(iterable, default=False, pred=None):
     """Returns the first true value in the iterable.
@@ -22,8 +35,7 @@ def acceptable(actual: int, predict: int, height: int):
     return abs(actual - predict) < height * (ACCEPTABLE_PERCENTAGE / 100)
 
 
-
-def borderMapping(actualData, predictData, confidences, height):
+def border_mapping(actualData, predictData, confidences, height):
 
     matches = []
 
@@ -32,6 +44,8 @@ def borderMapping(actualData, predictData, confidences, height):
     confidence = list(map(float, confidences.split('_'))) if confidences else []
 
     for pred, conf in zip(predict, confidence):
+        if not (MINIMUM_HEIGHT <= (pred/height)  <= MAXIMUM_HEIGHT):
+            continue
         match = first_true(actual, default=None, pred=partial(acceptable, predict=pred, height=height))
         
         if match is None:
@@ -47,22 +61,12 @@ def borderMapping(actualData, predictData, confidences, height):
         })
         actual.remove(match)
 
-    unmatched = [{'predict': 0, 'actual': 1}] * len(actual)
+    unmatched = [{'predict': 0, 'actual': 1} for _ in actual] 
 
     return matches + unmatched
 
 
-def readCSVasDict(filename: str, key: str) -> dict:
-    with open(filename, mode='r') as csvfile:
-        reader = csv.DictReader(csvfile)
-        result = { row[key]: row for row in reader }
-    
-    return result
-
-
-def main():
-    predictData = readCSVasDict('./testing-data/first_inference_official2.csv', 'img')
-    actualData = readCSVasDict('./testing-data/all-data-corrected.csv', 'image')
+def process_border(predictData: dict, actualData: dict):
 
     processed = []
 
@@ -72,25 +76,10 @@ def main():
         confidence = predictData[image]['fb_post']
         height = int(predictData[image]['height'])
         
-        matches = borderMapping(actual, predict, confidence, height)
+        matches = border_mapping(actual, predict, confidence, height)
         processed += matches
 
-        if LOG_DETAILS:
-            print(f'{image=}')
-            print(f'{actual=}')
-            print(f'{predict=}')
-            print(f'{confidence=}')
-            print(f'{height=}px')
-            print(f'{matches=}')
-            print('=' * 50)
+    return processed
 
 
-    write_csv(
-        './testing-data/border.csv',
-        fields=['actual', 'predict'],
-        data=processed
-    )
 
-
-if __name__ == '__main__':
-    main()

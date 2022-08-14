@@ -1,11 +1,11 @@
 from itertools import accumulate
 from typing import Dict, List
+from . import INVISIBLE_HEIGHT
+from ..csvops import read_csv_as_dict
 import csv
 
 from attr import define, field, asdict
 from attr.converters import to_bool
-
-INVISIBLE_PERCENTAGE = 0.13
 
 @define
 class Dimension:
@@ -35,7 +35,7 @@ class ImageBasedRow:
     percentage: List[float] = field(converter=lambda x: [x])
     postNumber: List[int] = field(converter=lambda x: [x])
 
-    def addPost(self, row: PostBasedRow):
+    def add_post(self, row: PostBasedRow):
         self.isCorrect = self.isCorrect and row.isCorrect
         self.percentage.append(row.percentage)
         self.postNumber.append(row.postNumber)
@@ -51,17 +51,17 @@ class ImageBasedRow:
             'postNumber',
         ]
     
-    def bordersInPixel(self, imageHeight: int) -> List[int]:
-        # the reason to put [1:-1] is to drop the INVISIBLE_PERCENTAGE
-        accumulatedPercentage = list(accumulate(self.percentage, initial=INVISIBLE_PERCENTAGE))[1:-1]
+    def borders_in_pixel(self, imageHeight: int) -> List[int]:
+        # the reason to put [1:-1] is to drop the INVISIBLE_HEIGHT
+        accumulatedPercentage = list(accumulate(self.percentage, initial=INVISIBLE_HEIGHT))[1:-1]
 
-        def getPixel(percentage: float, imageHeight: int):
+        def get_pixel(percentage: float, imageHeight: int):
             return round(percentage * imageHeight)
         
-        return [getPixel(percentage, imageHeight) for percentage in accumulatedPercentage]
+        return [get_pixel(percentage, imageHeight) for percentage in accumulatedPercentage]
 
-    def asDict(self):
-        border = self.bordersInPixel(imageToSize[self.image].height)
+    def as_dict(self):
+        border = self.borders_in_pixel(imageToSize[self.image].height)
 
         return {
             'image': self.image,
@@ -73,7 +73,7 @@ class ImageBasedRow:
         }
 
 
-def readCSVToDict(filename: str) -> Dict[str, ImageBasedRow]:
+def read_csv_to_dict(filename: str) -> Dict[str, ImageBasedRow]:
     imageToRow: Dict[str, ImageBasedRow] = {}
     
     with open(filename, mode='r') as csvfile:
@@ -90,20 +90,20 @@ def readCSVToDict(filename: str) -> Dict[str, ImageBasedRow]:
             )
 
             if (imageRow := imageToRow.get(postRow.image)) is not None:
-                imageRow.addPost(postRow) 
+                imageRow.add_post(postRow) 
             else:
                 imageToRow[postRow.image] = ImageBasedRow(**asdict(postRow))
     
     return imageToRow
 
 def main():
-    imageToRow = readCSVToDict('./testing-data/test-1.csv')
-    imageToRow.update(readCSVToDict('./testing-data/test-2.csv'))
+    imageToRow = read_csv_to_dict('./testing-data/test-1.csv')
+    imageToRow.update(read_csv_to_dict('./testing-data/test-2.csv'))
 
     with open('./testing-data/all-data.csv', mode='w') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=ImageBasedRow.keys())
         writer.writeheader()
-        writer.writerows(row.asDict() for row in imageToRow.values())
+        writer.writerows(row.as_dict() for row in imageToRow.values())
 
 if __name__ == '__main__':
     main()
