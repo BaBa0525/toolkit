@@ -10,7 +10,3 @@ class PostBasedRow:
     isComment: bool = field(converter=to_bool)
     isExternal: bool = field(converter=to_bool)
     isCorrect: bool = field(converter=lambda x: not to_bool(x))
-
-    @property
-    def __dict__(self):
-        return asdict(self)
