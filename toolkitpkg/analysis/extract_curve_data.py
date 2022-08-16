@@ -1,9 +1,9 @@
-from typing import Dict, List
 from functools import partial
-from . import ACCEPTABLE_PERCENTAGE, MAXIMUM_HEIGHT, MINIMUM_HEIGHT
+from typing import Callable
 
+from . import constants
 
-def extract_field(corrected: List[Dict[str, str]], inference: List[Dict[str, str]], truthField: str, predictField: str) -> List[dict]:
+def extract_field(corrected: 'list[dict[str, str]]', inference: 'list[dict[str, str]]', truthField: str, predictField: str) -> 'list[dict]':
     imageToFields = {}
 
     for data in corrected:
@@ -31,37 +31,37 @@ def first_true(iterable, default=False, pred=None):
     return next(filter(pred, iterable), default)
 
 
-def acceptable(actual: int, predict: int, height: int):
-    return abs(actual - predict) < height * (ACCEPTABLE_PERCENTAGE / 100)
+def is_acceptable(actual: int, predict: int, height: int):
+    return abs(actual - predict) < height * (constants.ACCEPTABLE_PERCENTAGE / 100)
 
+def is_visible(predict: int, height: int):
+    return constants.MINIMUM_HEIGHT <= (predict / height)  <= constants.MAXIMUM_HEIGHT
 
-def border_mapping(actualData, predictData, confidences, height):
+def split_str_to_list(data: str, func: Callable = int) -> list:
+    return list(map(func, data.split('_'))) if data else []
+
+def border_mapping(actualData: str, predictData: str, confidences: str, height: int):
 
     matches = []
 
-    predict = list(map(int, predictData.split('_'))) if predictData else []
-    actual = list(map(int, actualData.split('_'))) if actualData else []
-    confidence = list(map(float, confidences.split('_'))) if confidences else []
+    predict = split_str_to_list(predictData)
+    actual = split_str_to_list(actualData)
+    confidence = split_str_to_list(confidences, func=float)
 
     for pred, conf in zip(predict, confidence):
-        if not (MINIMUM_HEIGHT <= (pred/height)  <= MAXIMUM_HEIGHT):
+        if not is_visible(pred, height):
             continue
-        match = first_true(actual, default=None, pred=partial(acceptable, predict=pred, height=height))
+
+        match = first_true(actual, default=None, pred=partial(is_acceptable, predict=pred, height=height))
         
         if match is None:
-            matches.append({
-                'predict': conf,
-                'actual': 0
-            })
+            matches.append({ 'predict': conf, 'actual': 0 })
             continue
 
-        matches.append({
-            'predict': conf,
-            'actual': 1
-        })
+        matches.append({ 'predict': conf, 'actual': 1 })
         actual.remove(match)
 
-    unmatched = [{'predict': 0, 'actual': 1} for _ in actual] 
+    unmatched = [{ 'predict': 0, 'actual': 1 } for _ in actual] 
 
     return matches + unmatched
 

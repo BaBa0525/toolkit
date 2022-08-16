@@ -1,21 +1,20 @@
 import csv
-from typing import List
 
-def read_csv(filename: str):
-    with open(filename) as csvfile:
-        reader = csv.DictReader(csvfile)
-        data = [row for row in reader]
+def read_csv(filename: str) -> 'list[dict[str]]':
+    with open(filename, mode='r') as csvfile:
+        rows = csv.DictReader(csvfile)
+        data = list(rows)
 
     return data
 
-def read_csv_as_dict(filename: str, key: str) -> dict:
+def read_csv_as_dict(filename: str, keyAttr: str) -> 'dict[str, dict[str]]':
     with open(filename, mode='r') as csvfile:
-        reader = csv.DictReader(csvfile)
-        result = { row[key]: row for row in reader }
+        rows = csv.DictReader(csvfile)
+        data = { row[keyAttr]: row for row in rows }
     
-    return result
+    return data
 
-def write_csv(filename: str, fields: List[str], data: List[dict]):
+def write_csv(filename: str, fields: 'list[str]', data: 'list[dict[str]]'):
     with open(filename, mode='w') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=fields)
         writer.writeheader()

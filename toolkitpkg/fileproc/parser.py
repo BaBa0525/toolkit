@@ -1,34 +1,23 @@
-from dataclasses import dataclass
-from typing import List
-import csv
+from collections import namedtuple
 import re
 
 import pandas as pd
 
+from ..csvops import write_csv
 
-@dataclass
-class Row:    
-    image: str
-    fb_external_1: str
-    fb_external_2: str
-    fb_external_3: str
-    fb_external_4: str
-    fb_external_5: str
-    fb_comment_1: str
-    fb_comment_2: str
-    fb_home: str
-    fb_post: str
-    fb_post_top_y: str
+FIELD_NAMES = [
+    'image', 
+    'fb_external_1', 'fb_external_2', 'fb_external_3', 'fb_external_4', 'fb_external_5', 
+    'fb_comment_1', 'fb_comment_2', 
+    'fb_home', 
+    'fb_post', 'fb_post_top_y'
+    ]
 
+Row = namedtuple('Row', FIELD_NAMES)
 
 class DetectionResultParser:
-    FIELDS = ['image', 'fb_external_1', 'fb_external_2', 'fb_external_3', 'fb_external_4', 'fb_external_5', 'fb_comment_1', 'fb_comment_2', 'fb_home', 'fb_post', 'fb_post_top_y']
-    
-    def __init__(self, inputFile: str):
-        self.dicts = DetectionResultParser.to_dicts(inputFile)
-
     @staticmethod
-    def to_dicts(filename: str) -> List[dict]:
+    def read_detection_result_to_dicts(filename: str) -> 'list[dict[str, str]]':
         dicts = []
 
         with open(filename, 'r') as file:
@@ -37,7 +26,7 @@ class DetectionResultParser:
                 
                 if (field := arr[0]) == 'Enter Image Path':
                     image = arr[1].strip()
-                    dicts.append({ **dict.fromkeys(DetectionResultParser.FIELDS, ''), 'image': image })
+                    dicts.append({ **dict.fromkeys(FIELD_NAMES, ''), 'image': image })
                 elif field == 'fb_post':
                     d = dicts[-1]
                     x = arr[1].split('%')
@@ -50,7 +39,7 @@ class DetectionResultParser:
 
                     start, end = re.search(r'top_y:\s*\d+', line).span()
                     d['fb_post_top_y'] += line[start:end].split()[1]
-                elif field in DetectionResultParser.FIELDS:
+                elif field in FIELD_NAMES:
                     if d[field] != '':
                         continue
 
@@ -60,22 +49,13 @@ class DetectionResultParser:
 
         return dicts
 
-    def to_csv(self, output: str) -> None:
-        with open(output, 'w') as csvfile:
-            writer = csv.DictWriter(csvfile, fieldnames=self.FIELDS)
-            writer.writeheader()
-            writer.writerows(self.dicts)
+    def __init__(self, inputFile: str):
+        '''Parses the detection result from YOLO to desired format (csv, df).'''
+        
+        self.dicts = DetectionResultParser.read_detection_result_to_dicts(inputFile)
 
+    def to_csv(self, outputFile: str):
+        write_csv(outputFile, FIELD_NAMES, self.dicts)
 
     def to_df(self) -> pd.DataFrame:
         return pd.DataFrame([Row(**d) for d in self.dicts])
-
-
-if __name__ == "__main__":
-    parser = DetectionResultParser(inputFile='result_example.txt')
-
-    # getting a pandas.DataFreame object
-    df = parser.to_df()
-
-    # or, alternatively, output to a .csv file
-    parser.to_csv(ouptut='result_example.csv')

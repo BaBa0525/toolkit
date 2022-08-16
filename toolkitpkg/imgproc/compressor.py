@@ -1,35 +1,40 @@
-from dataclasses import dataclass, field
-from typing import List
-from PIL import Image
 import os
 
-@dataclass
+from PIL import Image
+
 class Compressor:
-    size_factor: float = 0.8
-    quality: int = 85
-    file_format: List[str] = field(default_factory=['.jpg'])
+    def __init__(self, size_factor: float = 0.8, quality: int = 85, file_format: 'list[str]' = ['.jpg']):
+        '''Instantiate an image compressor object.'''
+        self.size_factor = size_factor
+        self.quality = quality
+        self.file_format = file_format
 
 
-    def compressImage(self, pathIn: str, pathOut: str):
-        img = Image.open(pathIn)
-        height, width = img.size
-        height = int(height * self.size_factor)
-        width = int(width * self.size_factor)
-        img = img.resize((height, width), Image.Resampling.LANCZOS)
-        img.save(pathOut, optimize=True, quality=self.quality)
+    def compress_image(self, inputFile: str, outputFile: str):
+        '''Compress a single image.'''
+        img = Image.open(inputFile)
 
-    def compress(self, dirIn: str, dirOut: str):
+        width, height = img.size
+        newWidth = int(width * self.size_factor)
+        newHeight = int(height * self.size_factor)
+
+        img = img.resize((newWidth, newHeight), Image.Resampling.LANCZOS)
+        img.save(outputFile, optimize=True, quality=self.quality)
+
+    def compress(self, inputDirectory: str, outputDirectory: str):
+        '''Compress every image in the directory input_dir if the file extension has matches in the file_format.'''
         try:
-            os.makedirs(dirOut)
+            os.makedirs(outputDirectory)
         except FileExistsError:
             pass
 
-        for file in os.listdir(dirIn):
+        for file in os.listdir(inputDirectory):
             _, ext = os.path.splitext(file)
-            if ext not in self.file_format: continue
-            self.compressImage(os.path.join(dirIn, file), os.path.join(dirOut, file))
 
+            if ext not in self.file_format: 
+                continue
 
-if __name__ == '__main__':
-    compressor = Compressor(size_factor=0.8, quality=75, file_format=['.jpg', '.png'])
-    compressor.compress('./2022-05-30', './compressed')
+            inputFile = os.path.join(inputDirectory, file)
+            outputFile = os.path.join(outputDirectory, file)
+
+            self.compress_image(inputFile, outputFile)

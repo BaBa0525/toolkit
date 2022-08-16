@@ -1,18 +1,18 @@
 from itertools import accumulate
-from typing import Dict, List
-from . import INVISIBLE_HEIGHT
-from ..csvops import read_csv_as_dict
 import csv
 
 from attr import define, field, asdict
 from attr.converters import to_bool
+
+from . import constants
+from ..csvops import read_csv
 
 @define
 class Dimension:
     width: int = field(converter=int)
     height: int = field(converter=int)
 
-with open('./testing-data/first_inference_official2 - first_inference_official2.csv', mode='r') as csvfile:
+with open('./testing-data/first_inference_official2.csv', mode='r') as csvfile:
     reader = csv.DictReader(csvfile)
     imageToSize = { row['img']: Dimension(row['width'], row['height']) for row in reader }
 
@@ -32,8 +32,8 @@ class ImageBasedRow:
     isComment: bool
     isExternal: bool
     isCorrect: bool
-    percentage: List[float] = field(converter=lambda x: [x])
-    postNumber: List[int] = field(converter=lambda x: [x])
+    percentage: 'list[float]' = field(converter=lambda x: [x])
+    postNumber: 'list[int]' = field(converter=lambda x: [x])
 
     def add_post(self, row: PostBasedRow):
         self.isCorrect = self.isCorrect and row.isCorrect
@@ -42,18 +42,11 @@ class ImageBasedRow:
 
     @staticmethod
     def keys():
-        return [
-            'image', 
-            'isComment', 
-            'isExternal',
-            'isCorrect',
-            'border', 
-            'postNumber',
-        ]
+        return ['image', 'isComment', 'isExternal','isCorrect','border', 'postNumber']
     
-    def borders_in_pixel(self, imageHeight: int) -> List[int]:
-        # the reason to put [1:-1] is to drop the INVISIBLE_HEIGHT
-        accumulatedPercentage = list(accumulate(self.percentage, initial=INVISIBLE_HEIGHT))[1:-1]
+    def borders_in_pixel(self, imageHeight: int) -> 'list[int]':
+        # put [1:-1] to drop the INVISIBLE_HEIGHT
+        accumulatedPercentage = list(accumulate(self.percentage, initial=constants.INVISIBLE_HEIGHT))[1:-1]
 
         def get_pixel(percentage: float, imageHeight: int):
             return round(percentage * imageHeight)
@@ -73,37 +66,24 @@ class ImageBasedRow:
         }
 
 
-def read_csv_to_dict(filename: str) -> Dict[str, ImageBasedRow]:
-    imageToRow: Dict[str, ImageBasedRow] = {}
-    
-    with open(filename, mode='r') as csvfile:
-        reader = csv.DictReader(csvfile)
-        
-        for csvdata in reader:
-            postRow = PostBasedRow(
-                image=csvdata['images'],
-                percentage=csvdata['percent'],
-                postNumber=csvdata['code_id'],
-                isComment=csvdata['comment'],
-                isExternal=csvdata['outer_link'],
-                isCorrect=csvdata['correct'],
-            )
+def read_csv_to_dict(filename: str) -> 'dict[str, ImageBasedRow]':
+    imageToRow: 'dict[str, ImageBasedRow]' = {}
 
-            if (imageRow := imageToRow.get(postRow.image)) is not None:
-                imageRow.add_post(postRow) 
-            else:
-                imageToRow[postRow.image] = ImageBasedRow(**asdict(postRow))
+    data = read_csv(filename)
+
+    for d in data:
+        post = PostBasedRow(
+            image=d['images'],
+            percentage=d['percent'],
+            postNumber=d['code_id'],
+            isComment=d['comment'],
+            isExternal=d['outer_link'],
+            isCorrect=d['correct']
+        )
+
+        if (imageRow := imageToRow.get(post.image)) is not None:
+            imageRow.add_post(post)
+        else:
+            imageToRow[post.image] = ImageBasedRow(**asdict(post))
     
     return imageToRow
-
-def main():
-    imageToRow = read_csv_to_dict('./testing-data/test-1.csv')
-    imageToRow.update(read_csv_to_dict('./testing-data/test-2.csv'))
-
-    with open('./testing-data/all-data.csv', mode='w') as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames=ImageBasedRow.keys())
-        writer.writeheader()
-        writer.writerows(row.as_dict() for row in imageToRow.values())
-
-if __name__ == '__main__':
-    main()
