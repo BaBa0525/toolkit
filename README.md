@@ -1,10 +1,28 @@
-# toolkit
+# Toolkits for media research
 
-## Package `toolkitpkg`
+Before starting, we recommend you to create an virtual environment and download the dependencies:
+```sh
+virtualenv -p python3 venv
+source venv/bin/activate
 
-You can do the following in your Python scripts:
-```python
-import toolkitpkg
+pip install -r requirements.txt
 ```
 
-See `package_example.py` for examples.
+## Packages
+
+### `utils`
+
+All shared utility functions, currently basic csv operations and decorators.
+
+### `fileprocessing`
+
+Contains a specific parser class `DetectionResultParser` for YOLO detection results.
+
+### `imgprocessing`
+
+A simple package that contains an image compressor class `Compressor`.
+
+### `analysis`
+
+Lots of functionalites that are needed for model performance evaluation including data preprocessing and curve representation.
+
