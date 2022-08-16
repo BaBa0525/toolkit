@@ -12,7 +12,6 @@ def first_true(iterable, default=False, pred=None):
 
     If *pred* is not None, returns the first item
     for which pred(item) is true.
-
     """
     return next(filter(pred, iterable), default)
 
@@ -42,12 +41,9 @@ def reassign_post_number(data: "list[dict[str, str]]", identifier: int) -> "list
         for number in postNumbers:
             idString = f"{identifier}-{number}"
 
-            if (newNumber := idStringToNewNumber.get(idString)) is not None:
-                newPostNumbers.append(newNumber)
-                continue
-
-            newNumber = len(idStringToNewNumber) + 1
-            idStringToNewNumber[idString] = newNumber
+            newNumber = idStringToNewNumber.setdefault(
+                idString, len(idStringToNewNumber) + 1
+            )
             newPostNumbers.append(newNumber)
 
         newList.append({**d, "postNumber": "_".join(map(str, newPostNumbers))})

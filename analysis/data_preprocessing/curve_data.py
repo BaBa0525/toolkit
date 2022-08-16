@@ -26,10 +26,7 @@ def post_based_to_image_based(filename: str) -> "dict[str, ImageBasedRow]":
             isCorrect=d["correct"],
         )
 
-        if (imageRow := imageToRow.get(post.image)) is not None:
-            imageRow.add_post(post)
-        else:
-            imageToRow[post.image] = ImageBasedRow(**post.__dict__)
+        imageToRow.setdefault(post.image, ImageBasedRow.from_post(post)).add_post(post)
 
     return imageToRow
 

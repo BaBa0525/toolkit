@@ -22,8 +22,19 @@ class ImageBasedRow:
     isComment: bool
     isExternal: bool
     isCorrect: bool
-    percentage: "list[float]" = field(converter=lambda x: [x])
-    postNumber: "list[int]" = field(converter=lambda x: [x])
+    percentage: "list[float]"
+    postNumber: "list[int]"
+
+    @classmethod
+    def from_post(cls, row: PostBasedRow):
+        obj = cls.__new__(cls)
+        obj.image = row.image
+        obj.isComment = row.isComment
+        obj.isExternal = row.isExternal
+        obj.isCorrect = True
+        obj.percentage = []
+        obj.postNumber = []
+        return obj
 
     def add_post(self, row: PostBasedRow):
         self.isCorrect = self.isCorrect and row.isCorrect
@@ -44,7 +55,7 @@ class ImageBasedRow:
         ]
 
     @property
-    def __dict__(self):
+    def as_dict(self):
         border = self.borders_in_pixel(imageToSize[self.image].height)
 
         return {
