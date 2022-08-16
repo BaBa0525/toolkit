@@ -12,7 +12,7 @@ pip install -r requirements.txt
 
 ### `utils`
 
-All shared utility functions, currently basic csv operations, and decorators.
+All shared utility functions, currently basic csv operations and decorators.
 
 ### `fileprocessing`
 
@@ -24,5 +24,5 @@ A simple package that contains an image compressor class `Compressor`.
 
 ### `analysis`
 
-Lots of functionalites that are needed for model performance evaluation including data processing and curve representation.
+Lots of functionalites that are needed for model performance evaluation including data preprocessing and curve representation.
 
