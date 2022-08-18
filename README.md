@@ -1,5 +1,7 @@
 # Toolkits for media research
 
+## Setup
+
 Before starting, we recommend you to create an virtual environment and download the dependencies:
 ```sh
 virtualenv -p python3 venv
@@ -7,6 +9,14 @@ source venv/bin/activate
 
 pip install -r requirements.txt
 ```
+
+## Scripts
+
+### `imgcomp.py`
+
+A command line tool for image compression.
+
+Input `python3 imgcomp.py --help` for more details.
 
 ## Packages
 
