@@ -24,7 +24,7 @@ Row = namedtuple("Row", FIELD_NAMES)
 
 class DetectionResultParser:
     @staticmethod
-    def read_detection_result_to_dicts(filename: str) -> "list[dict[str, str]]":
+    def _read_detection_result_to_dicts(filename: str) -> "list[dict[str, str]]":
         dicts = []
 
         with open(filename, "r") as file:
@@ -34,6 +34,7 @@ class DetectionResultParser:
                 if (field := arr[0]) == "Enter Image Path":
                     image = arr[1].strip()
                     dicts.append({**dict.fromkeys(FIELD_NAMES, ""), "image": image})
+                    
                 elif field == "fb_post":
                     d = dicts[-1]
                     x = arr[1].split("%")
@@ -44,8 +45,9 @@ class DetectionResultParser:
 
                     d["fb_post"] += x[0].strip()
 
-                    start, end = re.search(r"top_y:\s*\d+", line).span()
-                    d["fb_post_top_y"] += line[start:end].split()[1]
+                    match = re.search(r"top_y:\s*\d+", line).group()
+                    d["fb_post_top_y"] += match.split()[1]
+
                 elif field in FIELD_NAMES:
                     if d[field] != "":
                         continue
@@ -59,7 +61,7 @@ class DetectionResultParser:
     def __init__(self, inputFile: str):
         """Parses the detection result from YOLO to desired format."""
 
-        self.dicts = DetectionResultParser.read_detection_result_to_dicts(inputFile)
+        self.dicts = DetectionResultParser._read_detection_result_to_dicts(inputFile)
 
     def to_csv(self, outputFile: str):
         write_csv(outputFile, FIELD_NAMES, self.dicts)

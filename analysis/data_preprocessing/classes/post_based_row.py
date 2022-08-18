@@ -4,6 +4,8 @@ from attr.converters import to_bool
 
 @define
 class PostBasedRow:
+    """A class that contains the detection data based on a post (detection output)."""
+
     image: str
     percentage: float = field(converter=float)
     postNumber: int = field(converter=int)
