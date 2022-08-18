@@ -11,12 +11,14 @@ class Compressor:
         file_format: "list[str]" = [".jpg"],
     ):
         """Instantiate an image compressor object."""
+
         self.size_factor = size_factor
         self.quality = quality
         self.file_format = file_format
 
     def compress_image(self, inputFile: str, outputFile: str):
         """Compress a single image."""
+
         img = Image.open(inputFile)
 
         width, height = img.size
@@ -28,6 +30,7 @@ class Compressor:
 
     def compress(self, inputDirectory: str, outputDirectory: str):
         """Compress every image in the directory input_dir if the file extension has matches in the file_format."""
+
         try:
             os.makedirs(outputDirectory)
         except FileExistsError:
