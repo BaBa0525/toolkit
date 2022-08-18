@@ -2,7 +2,7 @@ from functools import partial
 
 from utils.csv import read_csv
 from .classes import PostBasedRow, ImageBasedRow
-from .utils import (
+from .helpers import (
     reassign_post_number,
     split_str_to_list,
     is_visible,
