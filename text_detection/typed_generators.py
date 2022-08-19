@@ -1,32 +1,26 @@
-from dbm import dumb
 from google.cloud import vision
 
 from typing import Iterator
 
 
 def pages(document: vision.TextAnnotation, /) -> Iterator[vision.Page]:
-    for page in document.pages:
-        yield page
+    yield from document.pages
 
 
 def blocks(page: vision.Page, /) -> Iterator[vision.Block]:
-    for block in page.blocks:
-        yield block
+    yield from page.blocks
 
 
 def paragraphs(block: vision.Block, /) -> Iterator[vision.Paragraph]:
-    for paragraph in block.paragraphs:
-        yield paragraph
+    yield from block.paragraphs
 
 
 def words(paragraph: vision.Paragraph, /) -> Iterator[vision.Word]:
-    for word in paragraph.words:
-        yield word
+    yield from paragraph.words
 
 
 def symbols(word: vision.Word, /) -> Iterator[vision.Symbol]:
-    for symbol in word.symbols:
-        yield symbol
+    yield from word.symbols
 
 
 def get_words_from_document(
@@ -35,5 +29,4 @@ def get_words_from_document(
     for page in pages(document):
         for block in blocks(page):
             for paragraph in paragraphs(block):
-                for word in words(paragraph):
-                    yield word
+                yield from words(paragraph)
