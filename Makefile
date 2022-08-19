@@ -7,7 +7,7 @@ PIP = ${VENV}/bin/pip
 
 all: init
 
-init: ${PIP} requirements.txt
+init: requirements.txt
 	virtualenv -p python3 ${VENV}
 	${PIP} install -r requirements.txt
 
