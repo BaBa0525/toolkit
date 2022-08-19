@@ -4,10 +4,7 @@
 
 Before starting, we recommend you to create an virtual environment and download the dependencies:
 ```sh
-virtualenv -p python3 venv
-source venv/bin/activate
-
-pip install -r requirements.txt
+make  # or make init
 ```
 
 ## Scripts
@@ -18,11 +15,17 @@ A command line tool for image compression.
 
 Input `python3 imgcomp.py --help` for more details.
 
+### `imgtext.py`
+
+A command line tool for image text detection.
+
+Input `python3 imgtext.py --help` for more details.
+
 ## Packages
 
 ### `utils`
 
-All shared utility functions, currently basic csv operations and decorators.
+Shared utility functions.
 
 ### `file_processing`
 

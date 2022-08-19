@@ -3,14 +3,11 @@ ACTIVATE = ${VENV}/bin/activate
 PYTHON = ${VENV}/bin/python3
 PIP = ${VENV}/bin/pip
 
-.PHONY: all run clean
+.PHONY: all init clean
 
-all: run
+all: init
 
-run: ${ACTIVATE}
-	${PYTHON} main.py
-
-${ACTIVATE}: requirements.txt
+init: ${PIP} requirements.txt
 	virtualenv -p python3 ${VENV}
 	${PIP} install -r requirements.txt
 
