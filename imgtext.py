@@ -59,6 +59,8 @@ def detect_all(args: argparse.Namespace):
     if not pathlib.Path(args.directory).is_dir():
         raise NotADirectoryError(f"{args.directory} is not a directory")
 
+    os.makedirs(args.output, exist_ok=True)
+
     if not pathlib.Path(args.output).is_dir():
         raise NotADirectoryError(f"{args.output} is not a directory")
 
@@ -86,6 +88,14 @@ def detect_one(args: argparse.Namespace):
 
     if imghdr.what(args.image) is None:
         raise TypeError(f"{args.image} unsupported file type")
+
+    path, _ = os.path.split(args.output)
+    os.makedirs(path, exist_ok=True)
+
+    if pathlib.Path(args.output).is_dir():
+        _, imgInput = os.path.split(args.image)
+        file, _ = os.path.splitext(imgInput)
+        args.output = os.path.join(args.output, f"{file}.json")
 
     response = detect_image(args.image)
     dump_json(response, args.output)
