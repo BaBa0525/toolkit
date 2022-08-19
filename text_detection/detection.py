@@ -4,6 +4,7 @@ import dotenv
 import errno
 import os
 
+from .helpers import filename_to_image
 from .exceptions import EnvironmentVariableNotFoundError
 
 
@@ -25,11 +26,11 @@ def setup_credential():
         raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), cred)
 
 
-def detect_image(image_filename: str) -> vision.AnnotateImageResponse:
+def detect_image(imageFile: str) -> vision.AnnotateImageResponse:
     """Make an API call to Google OCR API with the image file.
 
     Args:
-        image_filename: The filename of the image to be detected.
+        imageFile: The filename of the image to be detected.
 
     Returns:
         google.cloud.vision.AnnotateImageResponse: Response to Google OCR API request.
@@ -37,9 +38,42 @@ def detect_image(image_filename: str) -> vision.AnnotateImageResponse:
 
     client = vision.ImageAnnotatorClient()
 
-    with open(image_filename, mode="rb") as image_file:
-        content = image_file.read()
+    image = filename_to_image(imageFile)
+    feature = vision.Feature(type_=vision.Feature.Type.DOCUMENT_TEXT_DETECTION)
 
-    image = vision.Image(content=content)
+    request = vision.AnnotateImageRequest(image=image, features=[feature])
 
-    return client.document_text_detection(image=image)
+    return client.annotate_image(request)
+
+
+def batch_detect(filenames: "list[str]") -> "list[vision.AnnotateImageResponse]":
+    """Make an API call to Google OCR API with all image files specified.
+
+    Args:
+        filenames: A list of filenames to be detected.
+
+    Returns:
+        list[google.cloud.vision.AnnotateImageResponse]: All responses to Google OCR API request.
+    """
+
+    client = vision.ImageAnnotatorClient()
+
+    imageRequests = [
+        vision.AnnotateImageRequest(
+            image=filename_to_image(filename),
+            features=[vision.Feature(type=vision.Feature.Type.DOCUMENT_TEXT_DETECTION)],
+        )
+        for filename in filenames
+    ]
+
+    request = vision.BatchAnnotateImagesRequest(requests=imageRequests)
+
+    return client.batch_annotate_images(request=request).responses
+
+
+def dump_json(response: vision.AnnotateImageResponse, destination: str):
+    """Write a new JSON file with the content of the response."""
+
+    string = vision.AnnotateImageResponse.to_json(response)
+    with open(destination, mode="w") as jsonfile:
+        jsonfile.write(string)
