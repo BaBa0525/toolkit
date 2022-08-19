@@ -34,7 +34,7 @@ class DetectionResultParser:
                 if (field := arr[0]) == "Enter Image Path":
                     image = arr[1].strip()
                     dicts.append({**dict.fromkeys(FIELD_NAMES, ""), "image": image})
-                    
+
                 elif field == "fb_post":
                     d = dicts[-1]
                     x = arr[1].split("%")
