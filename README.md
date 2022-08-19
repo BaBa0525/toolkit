@@ -4,8 +4,7 @@
 
 Before starting, we recommend you to create an virtual environment and download the dependencies:
 ```sh
-make
-# or make init
+make  # or make init
 ```
 
 ## Scripts
