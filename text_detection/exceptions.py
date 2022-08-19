@@ -8,5 +8,5 @@ class EnvironmentVariableNotFoundError(Exception):
     def __init__(self, environ: str):
         self.environ = environ
         super().__init__(
-            f'Environment variable "{self.environ}" is not set.\nTry to setup an .env file.'
+            f'Environment variable "{self.environ}" is not set.\nTry to setup an `.env` file.'
         )
