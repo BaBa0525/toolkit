@@ -18,6 +18,12 @@ A command line tool for image compression.
 
 Input `python3 imgcomp.py --help` for more details.
 
+### `imgtext.py`
+
+A command line tool for image text detection.
+
+Input `python3 imgtext.py --help` for more details.
+
 ## Packages
 
 ### `utils`
