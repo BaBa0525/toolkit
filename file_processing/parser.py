@@ -5,7 +5,7 @@ import re
 
 from utils.csv import write_csv
 
-FIELD_NAMES = [
+FIELD_NAMES = (
     "image",
     "fb_external_1",
     "fb_external_2",
@@ -17,7 +17,7 @@ FIELD_NAMES = [
     "fb_home",
     "fb_post",
     "fb_post_top_y",
-]
+)
 
 Row = namedtuple("Row", FIELD_NAMES)
 
@@ -45,8 +45,11 @@ class DetectionResultParser:
 
                     d["fb_post"] += x[0].strip()
 
-                    match = re.search(r"top_y:\s*\d+", line).group()
-                    d["fb_post_top_y"] += match.split()[1]
+                    match = re.search(r"top_y:\s*\d+", line)
+                    if match is None:
+                        continue
+
+                    d["fb_post_top_y"] += match.group().split()[1]
 
                 elif field in FIELD_NAMES:
                     if d[field] != "":
