@@ -1,6 +1,7 @@
 from google.cloud import vision
 
 from statistics import mean
+import re
 
 
 def filename_to_image(filename: str):
@@ -25,19 +26,7 @@ def mean_of_bounding_box(boundingBox: vision.BoundingPoly) -> int:
     return round(mean(yCoords))
 
 
-def to_regex_string(string: str) -> str:
-    """Convert string to a valid regex string by replacing all preserved symbols."""
+def to_regex_string_list(strList: "list[str]") -> "list[str]":
+    """Escape all regex metacharacters of strings in list."""
 
-    return (
-        string.replace("$", r"\$")
-        .replace("^", r"\^")
-        .replace("+", r"\+")
-        .replace("(", r"\(")
-        .replace(")", r"\)")
-    )
-
-
-def to_regex_string_list(oldList: "list[str]") -> "list[str]":
-    """Convert all strings in list to a valid regex string."""
-
-    return [to_regex_string(string) for string in oldList]
+    return [re.escape(string) for string in strList]
