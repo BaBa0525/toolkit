@@ -1,7 +1,8 @@
 import csv
+from typing import Any, Collection, Iterable, Mapping
 
 
-def read_csv(filename: str) -> "list[dict[str]]":
+def read_csv(filename: str) -> "list[dict[str, Any]]":
     with open(filename, mode="r") as csvfile:
         rows = csv.DictReader(csvfile)
         data = list(rows)
@@ -9,7 +10,7 @@ def read_csv(filename: str) -> "list[dict[str]]":
     return data
 
 
-def read_csv_as_dict(filename: str, keyAttr: str) -> "dict[str, dict[str]]":
+def read_csv_as_dict(filename: str, keyAttr: str) -> "dict[str, dict[str, Any]]":
     with open(filename, mode="r") as csvfile:
         rows = csv.DictReader(csvfile)
         data = {row[keyAttr]: row for row in rows}
@@ -17,7 +18,7 @@ def read_csv_as_dict(filename: str, keyAttr: str) -> "dict[str, dict[str]]":
     return data
 
 
-def write_csv(filename: str, fields: "list[str]", data: "list[dict[str]]"):
+def write_csv(filename: str, fields: Collection, data: Iterable[Mapping]):
     with open(filename, mode="w") as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=fields)
         writer.writeheader()
