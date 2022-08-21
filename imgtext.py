@@ -17,7 +17,6 @@ optional arguments:
 import argparse
 import imghdr
 import os
-import pathlib
 import sys
 
 from text_detection import setup_credential, detect_image, dump_json, batch_detect
@@ -54,14 +53,21 @@ def configure_args(**kwargs):
 
 
 def detect_all(args: argparse.Namespace):
-    """Make call to Google OCR API with all images in args.directory and dump one JSON file for each image into args.output."""
+    """Make API call to Google OCR API to batch detect text in images.
 
-    if not pathlib.Path(args.directory).is_dir():
+    Args:
+        args (argparse.Namespace): program arguments
+
+    Raises:
+        NotADirectoryError: if either args.directory or args.output is not directory.
+    """
+
+    if not os.path.isdir(args.directory):
         raise NotADirectoryError(f"{args.directory} is not a directory")
 
     os.makedirs(args.output, exist_ok=True)
 
-    if not pathlib.Path(args.output).is_dir():
+    if not os.path.isdir(args.output):
         raise NotADirectoryError(f"{args.output} is not a directory")
 
     def is_specified(filename: str):
@@ -84,7 +90,14 @@ def detect_all(args: argparse.Namespace):
 
 
 def detect_one(args: argparse.Namespace):
-    """Make call to Google OCR API with args.image and dump JSON file at args.output."""
+    """Make API call to Google OCR API to detect text in image.
+
+    Args:
+        args (argparse.Namespace): program arguments
+
+    Raises:
+        TypeError: if args.image is not an image.
+    """
 
     if imghdr.what(args.image) is None:
         raise TypeError(f"{args.image} unsupported file type")
@@ -92,7 +105,7 @@ def detect_one(args: argparse.Namespace):
     path, _ = os.path.split(args.output)
     os.makedirs(path, exist_ok=True)
 
-    if pathlib.Path(args.output).is_dir():
+    if os.path.isdir(args.output):
         _, imgInput = os.path.split(args.image)
         file, _ = os.path.splitext(imgInput)
         args.output = os.path.join(args.output, f"{file}.json")

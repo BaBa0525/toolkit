@@ -61,8 +61,8 @@ def map_borders(actualData: str, predictData: str, confidences: str, height: int
 
     matches = []
 
-    predict = split_str_to_list(predictData)
-    actual = split_str_to_list(actualData)
+    predict = split_str_to_list(predictData, func=int)
+    actual = split_str_to_list(actualData, func=int)
     confidence = split_str_to_list(confidences, func=float)
 
     for pred, conf in zip(predict, confidence):

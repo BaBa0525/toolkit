@@ -1,5 +1,7 @@
 from matplotlib import pyplot as plt
 
+from enum import Enum
+
 from utils.csv import read_csv_as_dict, write_csv
 from analysis.data_preprocessing.curve_data import extract_field, extract_border_data
 from analysis.curves import draw_roc, draw_pr, draw_f1
@@ -32,16 +34,32 @@ def draw_combined_curve(drawFunc, category: str, **kwargs):
     plt.clf()
     drawFunc(f"data/official-one/{category}.csv", label="official one", **kwargs)
     drawFunc(f"data/official-two/{category}.csv", label="official two", **kwargs)
+    drawFunc(f"data/official-three/{category}.csv", label="official three", **kwargs)
+    drawFunc(
+        f"data/official-three-last/{category}.csv",
+        label="official three last",
+        **kwargs,
+    )
 
     figureType = drawFunc.__name__.split("_")[-1]
-    plt.legend(loc="lower left")
+    plt.legend(bbox_to_anchor=(1.04, 0.5), loc="center left")
 
-    plt.savefig(f"output/{category}/{category}_compared_{figureType}.png")
+    plt.savefig(
+        f"output/{category}/{category}_compared_{figureType}.png",
+        bbox_inches="tight",
+        pad_inches=0.25,
+    )
 
 
-def draw_curves(index: int = 0):
+class Category(Enum):
+    BORDER = 0
+    COMMENT = 1
+    EXTERNAL = 2
+
+
+def draw_curves(category: Category):
     categories = ["border", "comment", "external"]
-
+    index = category.value
     draw_combined_curve(draw_roc, categories[index])
     draw_combined_curve(draw_pr, categories[index], noSkillLabel="No skill")
     draw_combined_curve(draw_f1, categories[index])
@@ -49,9 +67,11 @@ def draw_curves(index: int = 0):
 
 if __name__ == "__main__":
 
-    data_proc("data/official-one")
-    data_proc("data/official-two")
+    # data_proc("data/official-one")
+    # data_proc("data/official-two")
+    # data_proc("data/official-three")
+    # data_proc("data/official-three-last")
 
-    draw_curves(0)
-    draw_curves(1)
-    draw_curves(2)
+    draw_curves(Category.BORDER)
+    draw_curves(Category.COMMENT)
+    draw_curves(Category.EXTERNAL)

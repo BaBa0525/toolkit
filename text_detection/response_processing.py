@@ -36,6 +36,7 @@ def split_posts_by_height(
         pattern = r"\s*".join(to_regex_string_list(postWords))
         text: str = document.text
 
-        posts.append(re.search(pattern, text).group())
+        if (match := re.search(pattern, text)) is not None:
+            posts.append(match.group())
 
     return posts

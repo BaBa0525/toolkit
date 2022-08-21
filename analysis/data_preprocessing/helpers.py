@@ -26,7 +26,7 @@ def is_visible(border: int, height: int):
     return config.MINIMUM_HEIGHT <= (border / height) <= config.MAXIMUM_HEIGHT
 
 
-def split_str_to_list(data: str, func: Callable[[str], any] = None) -> list:
+def split_str_to_list(data: str, func: Callable[[str], any] = str) -> list:
     """Split the underscore-separated data string into a list with each element applied by func."""
     return [func(x) if func else x for x in data.split("_")] if data else []
 
