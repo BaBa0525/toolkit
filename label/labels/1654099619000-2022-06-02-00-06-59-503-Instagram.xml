@@ -1,0 +1,26 @@
+<annotation>
+	<folder>image</folder>
+	<filename>1654099619000-2022-06-02-00-06-59-503-Instagram.jpg</filename>
+	<path>/home/alan/working/toolkit/label/image/1654099619000-2022-06-02-00-06-59-503-Instagram.jpg</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>540</width>
+		<height>1014</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>icon_nav</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>39</xmin>
+			<ymin>893</ymin>
+			<xmax>196</xmax>
+			<ymax>942</ymax>
+		</bndbox>
+	</object>
+</annotation>
