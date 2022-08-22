@@ -9,7 +9,7 @@ from .exceptions import EnvironmentVariableNotFoundError
 
 
 def setup_credential():
-    """Load credentail into environment variable and check whether the credentail file exists.
+    """Load credential into environment variable and check whether the credential file exists.
 
     Raises:
         text_detection.exceptions.EnvironmentVariableNotFoundError:

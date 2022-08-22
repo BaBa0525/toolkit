@@ -1,0 +1,26 @@
+<annotation>
+	<folder>image</folder>
+	<filename>1645609201000-2022-02-23-17-40-01-1487-Instagram.jpg</filename>
+	<path>/Users/hsunhsun/Documents/code/Python/toolkit/label/image/1645609201000-2022-02-23-17-40-01-1487-Instagram.jpg</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>540</width>
+		<height>1080</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>back</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>35</xmin>
+			<ymin>384</ymin>
+			<xmax>78</xmax>
+			<ymax>420</ymax>
+		</bndbox>
+	</object>
+</annotation>
