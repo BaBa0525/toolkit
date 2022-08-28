@@ -29,14 +29,5 @@ def split_posts_by_height(
     for word in tg.get_words_from_document(document):
         index = bisect(sortedBorders, mean_of_bounding_box(word.bounding_box))
         result[index].append(get_text_of_word(word))
-
-    posts: "list[str]" = []
-
-    for postWords in result:
-        pattern = r"\s*".join(to_regex_string_list(postWords))
-        text: str = document.text
-
-        if (match := re.search(pattern, text)) is not None:
-            posts.append(match.group())
-
-    return posts
+        
+    return result
