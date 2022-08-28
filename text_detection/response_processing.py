@@ -9,7 +9,7 @@ from . import typed_generators as tg
 
 def split_posts_by_height(
     document: vision.TextAnnotation, bordersInPixel: "list[int]"
-) -> "list[str]":
+) -> "list[list[str]]":
     """Split the text in document with the given borders.
 
     Args:
